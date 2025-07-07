@@ -1,0 +1,2 @@
+# wazuh
+Wazuh Important commands 
