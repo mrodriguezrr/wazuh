@@ -1,14 +1,5 @@
 # Wazuh — Command Reference
 
-### Cloud
-
-```bash
-TOKEN=$(curl -u <user>:<password> -k -X POST "https://<CloudID>.cloud.wazuh.com/api/wazuh/security/user/authenticate?raw=true")
-curl -k -X <METHOD> "https://<CloudID>.cloud.wazuh.com/api/wazuh/<ENDPOINT>" -H "Authorization: Bearer $TOKEN"
-```
-
----
-
 ### Token authentication
 
 ```bash
