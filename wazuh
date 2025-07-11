@@ -1,112 +1,58 @@
-# 📘 Wazuh Command Reference
+## TOkEN ON-PREM
 
-## 🔐 API Authentication & UUID
-
-```bash
-# Get a token (local manager)
 TOKEN=$(curl -u wazuh-wui:[pass] -k -X POST "https://localhost:55000/security/user/authenticate?raw=true")
-
-# Confirm API connectivity
 curl -k -X GET "https://localhost:55000/" -H "Authorization: Bearer $TOKEN"
-
-# Get Wazuh UUID and version
 curl -k -X GET "https://localhost:55000/manager/version/check" -H "Authorization: Bearer $TOKEN"
-````
 
----
 
-## ☁️ Cloud Token Usage
+## ☁ Cloud Token Usage
 
-```bash
-# Get token for cloud deployment
 TOKEN=$(curl -u <user>:<password> -k -X POST "https://<CloudID>.cloud.wazuh.com/api/wazuh/security/user/authenticate?raw=true")
-
-# Use token to call endpoint
 curl -k -X <METHOD> "https://<CloudID>.cloud.wazuh.com/api/wazuh/<ENDPOINT>" -H "Authorization: Bearer $TOKEN"
-```
 
----
 
-## 🧪 Cluster Health & Index Allocation
+## Cluster Health & Index Allocation
 
-```bash
-# Health check
 GET _cluster/health
-GET _cluster/settings?include_defaults
-GET _cat/indices/wazuh-*?h=index
-GET _plugins/_ism/explain/wazuh-*
-
-# Explain allocation
 GET _cluster/allocation/explain?pretty
-
-# View unassigned shards
 GET _cat/shards?h=index,shard,prirep,state,unassigned.reason
-
-# Change index replica settings
+GET _cluster/settings?include_defaults
 PUT /[IDX_NAME]/_settings
 {
   "number_of_replicas": 0,
   "index.auto_expand_replicas": false
 }
-```
 
----
 
 ## 📡 Curl Commands (Basic Auth)
 
-```bash
 curl -u admin:<pass> -k -X GET "https://localhost:9200/_cluster/health"
 curl -u admin:<pass> -k -X GET "https://localhost:9200/_cluster/allocation/explain?pretty"
 curl -u admin:<pass> -k -X GET "https://localhost:9200/_cat/shards?h=index,shard,prirep,state,unassigned.reason"
-
-curl -u admin:<pass> -k -X PUT "https://localhost:9200/[IDX_NAME]/_settings" \
-  -H 'Content-Type: application/json' \
-  -d'{ "index.number_of_replicas" : 0, "index.auto_expand_replicas": false }'
-
+curl -u admin:<pass> -k -X PUT "https://localhost:9200/[IDX_NAME]/_settings" -H 'Content-Type: application/json' -d '{ "index.number_of_replicas" : 0, "index.auto_expand_replicas": false }'
 curl -X DELETE "https://localhost:9200/[index-name]" -u admin:<pass> -k
-```
 
----
 
 ## 🔐 Curl With Certs
 
-```bash
-curl --cert /etc/wazuh-indexer/certs/admin.pem \
-     --key /etc/wazuh-indexer/certs/admin-key.pem \
-     -k -X GET "https://localhost:9200/_cluster/health"
+curl --cert /etc/wazuh-indexer/certs/admin.pem --key /etc/wazuh-indexer/certs/admin-key.pem -k -X GET "https://localhost:9200/_cluster/health"
+curl --cert /etc/wazuh-indexer/certs/admin.pem --key /etc/wazuh-indexer/certs/admin-key.pem -k -X GET "https://localhost:9200/_cluster/allocation/explain?pretty"
+curl --cert /etc/wazuh-indexer/certs/admin.pem --key /etc/wazuh-indexer/certs/admin-key.pem -k -X GET "https://localhost:9200/_cat/shards?h=index,shard,prirep,state,unassigned.reason"
+curl -k --cert /etc/wazuh-indexer/certs/admin.pem --key /etc/wazuh-indexer/certs/admin-key.pem -X PUT "https://localhost:9200/[IDX_NAME]/_settings" -H 'Content-Type: application/json' -d '{ "index.number_of_replicas": 0, "index.auto_expand_replicas": false }'
 
-curl --cert /etc/wazuh-indexer/certs/admin.pem \
-     --key /etc/wazuh-indexer/certs/admin-key.pem \
-     -k -X GET "https://localhost:9200/_cat/shards?h=index,shard,prirep,state,unassigned.reason"
-
-curl -k --cert /etc/wazuh-indexer/certs/admin.pem \
-         --key /etc/wazuh-indexer/certs/admin-key.pem \
-         -X PUT "https://localhost:9200/[IDX_NAME]/_settings" \
-         -H 'Content-Type: application/json' \
-         -d'{ "index.number_of_replicas": 0, "index.auto_expand_replicas": false }'
-```
-
----
 
 ## 📦 Indexer & Dashboard Plugins
 
-```bash
-# Indexer plugins
 /usr/share/wazuh-indexer/bin/opensearch-plugin list
-
-# Dashboard plugins
 sudo -u wazuh-dashboard /usr/share/wazuh-dashboard/bin/opensearch-dashboards-plugin list
 sudo -u wazuh-dashboard /usr/share/wazuh-dashboard/bin/opensearch-dashboards-plugin remove <PLUGIN_NAME>
 sudo -u wazuh-dashboard /usr/share/wazuh-dashboard/bin/opensearch-dashboards-plugin install <PLUGIN_NAME>
-```
 
----
 
 ## 🔁 Reindexing & Field Changes
 
-```bash
-# Check current indices
 GET _cat/indices/wazuh-alerts-*
+GET _cat/indices/wazuh-*?h=index
 
 # Add test doc to force field change
 POST wazuh-alerts-4.x-2025.06.30/_doc
@@ -115,19 +61,19 @@ POST wazuh-alerts-4.x-2025.06.30/_doc
   "data":{"UsedCpuPercent":0.0}
 }
 
-# View current template
+
+## View current template
+
 GET /_template/wazuh?pretty
 GET /wazuh-alerts-4.x-2025.07.01/_mapping/field/full_log
 GET _mapping/field/full_log
 
-# Reindex backup
 POST _reindex
 {
   "source": { "index": "wazuh-alerts-4.x-2025.06.30" },
   "dest":   { "index": "wazuh-alerts-4.x-2025.06.30-backup" }
 }
 
-# Delete and restore
 DELETE /wazuh-alerts-4.x-2025.06.30-backup
 
 POST _reindex
@@ -135,75 +81,55 @@ POST _reindex
   "source": { "index": "wazuh-alerts-4.x-2025.06.30-backup" },
   "dest":   { "index": "wazuh-alerts-4.x-2025.06.30" }
 }
-```
 
----
 
-## ⚙️ ISM & Index Policies
+## ⚙️ ISM  Index Policies
 
-```bash
 GET _plugins/_ism/explain
 GET _plugins/_ism/policies
 GET _plugins/_ism/policies/30d_policy?pretty=true
-```
+GET _plugins/_ism/explain/wazuh-*
 
----
 
 ## 📜 Journal & Log Checks
 
-```bash
 journalctl -xeu wazuh-dashboard --no-pager | grep -Ei "warn|error"
 journalctl -xeu wazuh-indexer --no-pager | grep -Ei "warn|error"
 
 cat /var/log/wazuh-indexer/wazuh-cluster.log | grep -Ei "warn|error"
 cat /var/log/filebeat/filebeat* | grep -i "warn|error"
 cat /var/ossec/logs/ossec.log | grep -i "warn|error"
-```
 
----
 
 ## 💽 Disk & File Checks
 
-```bash
 du -skh /home/ubuntu/* | sort -hr
 du / -h --max-depth=1 2>/dev/null
 
-# Generate fake log samples
+
+## Generate fake log samples
+
 for i in {1..8}; do echo '[log_sample]' >> /home/ubuntu/test ; done
-```
 
----
 
-## ❌ Exclude Wazuh APT Repo
+## Exclude Wazuh APT Repo
 
-```bash
 sed -i "s/^deb/#deb/" /etc/apt/sources.list.d/wazuh.list
 apt-get update
-```
 
----
 
-## 🔒 SSL Cert Info
+## SSL Cert Info
 
-```bash
 openssl x509 -in /etc/wazuh-dashboard/certs/dashboard.pem -noout -text
-```
 
----
 
-## 🧪 Port Tests (PowerShell)
 
-```powershell
+##  Port Tests (PowerShell)
+
+
 (new-object Net.Sockets.TcpClient).Connect("<WAZUH_MANAGER_IP>", 1514)
 (new-object Net.Sockets.TcpClient).Connect("<WAZUH_MANAGER_IP>", 1515)
 (new-object Net.Sockets.TcpClient).Connect("<WAZUH_MANAGER_IP>", 55000)
-
 (new-object Net.Sockets.TcpClient).Connect("60uucs2tvp15.cloud.wazuh.com", 1514)
-```
 
----
-
-
-
----
 
