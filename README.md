@@ -1,5 +1,7 @@
 # Wazuh — Command Reference
 
+---
+
 ### Token authentication
 
 ```bash
@@ -7,6 +9,8 @@ TOKEN=$(curl -u wazuh-wui:[pass] -k -X POST "https://localhost:55000/security/us
 curl -k -X GET "https://localhost:55000/" -H "Authorization: Bearer $TOKEN"
 curl -k -X GET "https://localhost:55000/manager/version/check" -H "Authorization: Bearer $TOKEN"
 ````
+
+---
 
 ### Cloud
 
