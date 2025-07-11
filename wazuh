@@ -71,16 +71,18 @@ GET _mapping/field/full_log
 POST _reindex
 {
   "source": { "index": "wazuh-alerts-4.x-2025.06.30" },
-  "dest":   { "index": "wazuh-alerts-4.x-2025.06.30-backup" }
+  "dest":   { "index": "wazuh-2025.06.30-backup" }
 }
 
-DELETE /wazuh-alerts-4.x-2025.06.30-backup
+DELETE /wazuh-alerts-4.x-2025.06.30
 
 POST _reindex
 {
-  "source": { "index": "wazuh-alerts-4.x-2025.06.30-backup" },
+  "source": { "index": "wazuh-2025.06.30-backup" },
   "dest":   { "index": "wazuh-alerts-4.x-2025.06.30" }
 }
+
+DELETE /wazuh-2025.06.30-backup
 
 
 ## ⚙️ ISM  Index Policies
@@ -125,7 +127,6 @@ openssl x509 -in /etc/wazuh-dashboard/certs/dashboard.pem -noout -text
 
 
 ##  Port Tests (PowerShell)
-
 
 (new-object Net.Sockets.TcpClient).Connect("<WAZUH_MANAGER_IP>", 1514)
 (new-object Net.Sockets.TcpClient).Connect("<WAZUH_MANAGER_IP>", 1515)
