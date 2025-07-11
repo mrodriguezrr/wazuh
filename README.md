@@ -1,7 +1,4 @@
 # Wazuh — Command Reference
-
-### 
-
 ### Token authentication
 
 ```bash
