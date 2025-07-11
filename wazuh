@@ -117,6 +117,8 @@ POST wazuh-alerts-4.x-2025.06.30/_doc
 
 # View current template
 GET /_template/wazuh?pretty
+GET /wazuh-alerts-4.x-2025.07.01/_mapping/field/full_log
+GET _mapping/field/full_log
 
 # Reindex backup
 POST _reindex
@@ -201,13 +203,7 @@ openssl x509 -in /etc/wazuh-dashboard/certs/dashboard.pem -noout -text
 
 ---
 
-## 📝 Notes
 
-* Save visualizations and `ossec.conf` before major changes.
-* Always snapshot VMs before upgrades.
-* Use cert-based curl where possible in production.
-* ISM policies apply only to new indices unless manually assigned.
-* Use `GET /wazuh-alerts-*/_stats/store` to verify disk usage.
 
 ---
 
