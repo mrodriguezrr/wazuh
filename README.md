@@ -212,15 +212,15 @@ Date
 Boolean
 
 ```bash
-  {    
-   "rename": {
-    "if": "ctx?.data?.myfield != null && !(ctx?.data?.myfield instanceof Map)",
-    "field": "data.myfield",
-    "target_field": "data.myfield_notObj",
-    "ignore_missing": true,
-    "ignore_failure": true
-   }
-  },
+    {
+      "rename": {
+        "if": "ctx?.data?.data != null && !(ctx?.data?.data instanceof char)",
+        "field": "data.data",
+        "target_field": "data.data_notObj",
+        "ignore_missing": true,
+        "ignore_failure": true
+    }
+    },
 ```
 
 ---
