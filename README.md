@@ -198,6 +198,33 @@ openssl x509 -in /etc/wazuh-dashboard/certs/dashboard.pem -noout -text
 
 ---
 
+## Processor for when field is an object and receives numbers, strings, array, date, or boolean. 
+
+Checks:
+data.myfield exists, if it does not exist, no errors occur and is false.
+data.myfield is not an object, if it is null, no errors occur and is false.
+If true (exists and is not an object), renames the data.myfield with data.myfield_notObj
+Could be:
+Number
+String
+Array
+Date
+Boolean
+
+```bash
+  {    
+   "rename": {
+    "if": "ctx?.data?.myfield != null && !(ctx?.data?.myfield instanceof Map)",
+    "field": "data.myfield",
+    "target_field": "data.myfield_notObj",
+    "ignore_missing": true,
+    "ignore_failure": true
+   }
+  },
+```
+
+---
+
 **Author:** Mainor Rodriguez
 **Last Updated:** July 11, 2025
 
