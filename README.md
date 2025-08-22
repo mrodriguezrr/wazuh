@@ -1,5 +1,6 @@
 ````markdown
 #  Wazuh / OpenSearch Useful Commands
+````
 
 ---
 
