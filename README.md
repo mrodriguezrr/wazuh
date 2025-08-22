@@ -1,7 +1,3 @@
-````markdown
-#  Wazuh / OpenSearch Useful Commands
-````
-
 # Wazuh / OpenSearch Useful Commands
 
 ## Table of Contents
