@@ -2,6 +2,30 @@
 #  Wazuh / OpenSearch Useful Commands
 ````
 
+# Wazuh / OpenSearch Useful Commands
+
+## Table of Contents
+1. [Token On-Prem](#1--token-on-prem)  
+2. [Cloud Token Usage](#2--cloud-token-usage)  
+3. [Cluster Health & Index Allocation](#3--cluster-health--index-allocation)  
+4. [Curl Commands (Basic Auth)](#4--curl-commands-basic-auth)  
+5. [Curl with Certs](#5--curl-with-certs)  
+6. [Indexer & Dashboard Plugins](#6--indexer--dashboard-plugins)  
+7. [Reindexing & Field Changes](#7--reindexing--field-changes)  
+8. [Templates & Reindexing](#8--templates--reindexing)  
+9. [ISM Index Policies](#9--ism-index-policies)  
+10. [Journal & Log Checks](#10--journal--log-checks)  
+11. [Disk & File Checks](#11--disk--file-checks)  
+12. [Generate Fake Logs](#12--generate-fake-logs)  
+13. [Exclude Wazuh APT Repo](#13--exclude-wazuh-apt-repo)  
+14. [SSL Cert Info](#14--ssl-cert-info)  
+15. [Port Tests (PowerShell)](#15--port-tests-powershell)  
+16. [Regex for Private IPs](#16--regex-for-private-ips)  
+17. [Update Indexer Credentials](#17--update-indexer-credentials)  
+18. [Upgrade Agents via API](#18--upgrade-agents-via-api)  
+19. [Processor (Object → Not Object)](#19--processor-object--not-object)  
+
+
 ---
 
 ## 1.  Token On-Prem
