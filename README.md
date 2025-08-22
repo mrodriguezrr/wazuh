@@ -69,6 +69,7 @@ curl -u admin:<pass> -k -X PUT "https://localhost:9200/[IDX_NAME]/_settings" \
   -H 'Content-Type: application/json' \
   -d '{ "index.number_of_replicas": 0, "index.auto_expand_replicas": false }'
 curl -X DELETE "https://localhost:9200/[index-name]" -u admin:<pass> -k
+curl -u admin:<pass> -k -X GET "https://localhost:9200/_cat/nodes?v"
 ```
 
 ---
@@ -81,6 +82,7 @@ curl --cert /etc/wazuh-indexer/certs/admin.pem --key /etc/wazuh-indexer/certs/ad
 curl -k --cert /etc/wazuh-indexer/certs/admin.pem --key /etc/wazuh-indexer/certs/admin-key.pem -X PUT "https://localhost:9200/[IDX_NAME]/_settings" \
   -H 'Content-Type: application/json' \
   -d '{ "index.number_of_replicas": 0, "index.auto_expand_replicas": false }'
+curl --cert /etc/wazuh-indexer/certs/admin.pem --key /etc/wazuh-indexer/certs/admin-key.pem -k -X GET "https://localhost:9200/_cat/nodes?v"
 ```
 
 ---
