@@ -19,7 +19,8 @@
 16. [Regex for Private IPs](#16--regex-for-private-ips)  
 17. [Update Indexer Credentials](#17--update-indexer-credentials)  
 18. [Upgrade Agents via API](#18--upgrade-agents-via-api)  
-19. [Processor (Object → Not Object)](#19--processor-object--not-object)  
+19. [Processor (Object → Not Object)](#19--processor-object--not-object)
+20. [Regex to match all including spaces and special characters](#20--Regex-to-match-all-including-spaces-and-special-characters)
 
 
 ---
@@ -238,7 +239,7 @@ PUT /agents/upgrade?agents_list=005,007&pretty=true
 }
 ```
 
-## 20.  Processor (Object → Not Object)
+## 20.  Regex to match all including spaces and special characters
 
 ```regex
 "([^"]+)"
