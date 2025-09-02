@@ -238,6 +238,18 @@ PUT /agents/upgrade?agents_list=005,007&pretty=true
 }
 ```
 
+## 20.  Processor (Object → Not Object)
+
+```regex
+"([^"]+)"
+```
+
+* `"` → matches the opening double quote.
+* `([^"]+)` → **capture group** that grabs one or more characters that are *not* a double quote (`[^"]+`).
+* `"` → matches the closing double quote.
+
+
+
 ```
 
 ```
