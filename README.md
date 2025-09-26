@@ -108,6 +108,17 @@ GET /wazuh-alerts-*/_stats/store
 GET _cat/indices/wazuh-alerts-*?bytes=gb&s=index
 
 ```
+```bash
+TOKEN=$(curl -u <user>:<password> -k -X POST "https://<CloudID>.cloud.wazuh.com/api/wazuh/security/user/authenticate?raw=true")
+
+curl -k -X GET "https://<CloudID>.cloud.wazuh.com:9200/_cat/indices/wazuh-alerts-*" -H "Authorization: Bearer $TOKEN"
+
+curl -k -X GET "https://<CloudID>.cloud.wazuh.com:9200/_cat/indices/wazuh-*?h=index" -H "Authorization: Bearer $TOKEN"
+
+curl -k -X GET "https://<CloudID>.cloud.wazuh.com:9200/wazuh-alerts-*/_stats/store" -H "Authorization: Bearer $TOKEN"
+
+curl -k -X GET "https://<CloudID>.cloud.wazuh.com:9200/_cat/indices/wazuh-alerts-*?bytes=gb&s=index" -H "Authorization: Bearer $TOKEN"
+```
 
 ---
 
