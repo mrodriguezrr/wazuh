@@ -105,6 +105,7 @@ sudo -u wazuh-dashboard /usr/share/wazuh-dashboard/bin/opensearch-dashboards-plu
 GET _cat/indices/wazuh-alerts-*
 GET _cat/indices/wazuh-*?h=index
 GET /wazuh-alerts-*/_stats/store
+GET /_cat/indices/winlogbeat*?v=true&s=index&format=json
 GET _cat/indices/wazuh-alerts-*?bytes=gb&s=index
 
 ```
