@@ -262,6 +262,8 @@ PUT /agents/upgrade?agents_list=005,007&pretty=true
 * `([^"]+)` → **capture group** that grabs one or more characters that are *not* a double quote (`[^"]+`).
 * `"` → matches the closing double quote.
 
+---
+
 ## 21. Include/exclude for Wazuh visualization creation
 
 ```
