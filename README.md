@@ -21,6 +21,7 @@
 18. [Upgrade Agents via API](#18--upgrade-agents-via-api)  
 19. [Processor (Object → Not Object)](#19--processor-object--not-object)
 20. [Regex to match all including spaces and special characters](#20--Regex-to-match-all-including-spaces-and-special-characters)
+21. [Include/exclude for Wazuh visualization creation](#21--Include/exclude-for-Wazuh-visualization-creation).
 
 
 ---
