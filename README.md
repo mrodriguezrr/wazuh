@@ -272,6 +272,4 @@ PUT /agents/upgrade?agents_list=005,007&pretty=true
 }
 ```
 
-```
-
-```
+---
