@@ -277,6 +277,7 @@ PUT /agents/upgrade?agents_list=005,007&pretty=true
 
 ```
 Get-ADGroupMember -Identity "Domain Admins" | Select-Object SamAccountName
+Get-ADUser DWM-198$ -Properties MemberOf | Select -ExpandProperty MemberOf
 ```
 
 ---
