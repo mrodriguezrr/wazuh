@@ -22,6 +22,7 @@
 19. [Processor (Object → Not Object)](#19--processor-object--not-object)
 20. [Regex to match all including spaces and special characters](#20--Regex-to-match-all-including-spaces-and-special-characters)
 21. [Include/exclude for Wazuh visualization creation](#21--Include/exclude-for-Wazuh-visualization-creation).
+22. [Get members of ADA group](#22--Get-members-of-ADA-group).
 
 
 ---
@@ -270,6 +271,12 @@ PUT /agents/upgrade?agents_list=005,007&pretty=true
 {
   "include": "ChronosAcc|ADAccounting02|ChronosDFS02|JMWACC|EXCHACC02|ExchAcc01|SQL"
 }
+```
+
+## 22.  Get members of ADA group
+
+```
+Get-ADGroupMember -Identity "Domain Admins" | Select-Object SamAccountName
 ```
 
 ---
