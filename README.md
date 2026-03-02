@@ -23,6 +23,9 @@
 20. [Regex to match all including spaces and special characters](#20--Regex-to-match-all-including-spaces-and-special-characters)
 21. [Include/exclude for Wazuh visualization creation](#21--Include/exclude-for-Wazuh-visualization-creation).
 22. [Get members of ADA group](#22--Get-members-of-ADA-group).
+23. [Get info from members of ADA](#23--Get-info-from-members-of-ADA).
+
+Get info from members of ADA
 
 
 ---
@@ -280,4 +283,9 @@ Get-ADGroupMember -Identity "Domain Admins" | Select-Object SamAccountName
 Get-ADUser DWM-198$ -Properties MemberOf | Select -ExpandProperty MemberOf
 ```
 
+## 23.  Get info from members of ADA
+
+```
+net user [User] /domain
+```
 ---
