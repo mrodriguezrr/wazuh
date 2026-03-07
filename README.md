@@ -295,7 +295,6 @@ net user [User] /domain
 # auditd Setup for Wazuh — Command Execution Logging
 
 > Recommended method for capturing command execution (`execve`) on Linux agents.
-> Wazuh-native — no custom decoders required.
 
 ---
 
