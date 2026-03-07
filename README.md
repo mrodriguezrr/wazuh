@@ -24,6 +24,7 @@
 21. [Include/exclude for Wazuh visualization creation](#21--Include/exclude-for-Wazuh-visualization-creation).
 22. [Get members of ADA group](#22--Get-members-of-ADA-group).
 23. [Get info from members of ADA](#23--Get-info-from-members-of-ADA).
+24. [Getting audit enabled on Linux](#24--Getting-audit-enabled-on-Linux).
 
 Get info from members of ADA
 
@@ -288,4 +289,69 @@ Get-ADUser DWM-198$ -Properties MemberOf | Select -ExpandProperty MemberOf
 ```
 net user [User] /domain
 ```
+
+## 24.  Getting audit enabled on Linux
+
+# auditd Setup for Wazuh — Command Execution Logging
+
+> Recommended method for capturing command execution (`execve`) on Linux agents.
+> Wazuh-native — no custom decoders required.
+
+---
+
+## Install
+
+```bash
+apt install auditd audispd-plugins   # Debian/Ubuntu
+yum install audit                    # RHEL/CentOS
+```
+
+---
+
+## Add Rules
+
+Edit `/etc/audit/rules.d/audit.rules`:
+
+```bash
+# Log all command executions (execve syscall)
+-a always,exit -F arch=b64 -S execve -k command_execution
+-a always,exit -F arch=b32 -S execve -k command_execution
+
+# Optional: exclude noisy system processes
+-F auid!=4294967295   # exclude unset UIDs (kernel threads)
+```
+
+---
+
+## Apply & Enable
+
+```bash
+augenrules --load
+systemctl enable auditd --now
+```
+
+---
+
+## Verify
+
+```bash
+# Check rules are loaded
+auditctl -l
+
+# Run a test command, then search for it
+cat /etc/hostname
+ausearch -k command_execution | tail -20
+```
+
+---
+
+
+
+
+
+
+
+
+
+
 ---
