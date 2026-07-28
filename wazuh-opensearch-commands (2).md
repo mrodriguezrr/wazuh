@@ -1,0 +1,517 @@
+# Wazuh / OpenSearch Useful Commands
+
+## Table of Contents
+1. [Token On-Prem](#1--token-on-prem)  
+2. [Cloud Token Usage](#2--cloud-token-usage)  
+3. [Cluster Health & Index Allocation](#3--cluster-health--index-allocation)  
+4. [Curl Commands (Basic Auth)](#4--curl-commands-basic-auth)  
+5. [Curl with Certs](#5--curl-with-certs)  
+6. [Indexer & Dashboard Plugins](#6--indexer--dashboard-plugins)  
+7. [Reindexing & Field Changes](#7--reindexing--field-changes)  
+8. [Templates & Reindexing](#8--templates--reindexing)  
+9. [ISM Index Policies](#9--ism-index-policies)  
+10. [Journal & Log Checks](#10--journal--log-checks)  
+11. [Disk & File Checks](#11--disk--file-checks)  
+12. [Generate Fake Logs](#12--generate-fake-logs)  
+13. [Exclude Wazuh APT Repo](#13--exclude-wazuh-apt-repo)  
+14. [SSL Cert Info](#14--ssl-cert-info)  
+15. [Port Tests (PowerShell)](#15--port-tests-powershell)  
+16. [Regex for Private IPs](#16--regex-for-private-ips)  
+17. [Update Indexer Credentials](#17--update-indexer-credentials)  
+18. [Upgrade Agents via API](#18--upgrade-agents-via-api)  
+19. [Processor (Object → Not Object)](#19--processor-object--not-object)
+20. [Regex to match all including spaces and special characters](#20--Regex-to-match-all-including-spaces-and-special-characters)
+21. [Include/exclude for Wazuh visualization creation](#21--Include/exclude-for-Wazuh-visualization-creation).
+22. [Get members of ADA group](#22--Get-members-of-ADA-group).
+23. [Get info from members of ADA](#23--Get-info-from-members-of-ADA).
+24. [Getting audit enabled on Linux](#24--Getting-audit-enabled-on-Linux).
+25. [ILM Metrics Policy — Stuck Warm Migration Troubleshooting](#25--ilm-metrics-policy--stuck-warm-migration-troubleshooting).
+
+Get info from members of ADA
+
+
+---
+
+## 1.  Token On-Prem
+
+```bash
+TOKEN=$(curl -u wazuh-wui:[pass] -k -X POST "https://localhost:55000/security/user/authenticate?raw=true")
+curl -k -X GET "https://localhost:55000/" -H "Authorization: Bearer $TOKEN"
+curl -k -X GET "https://localhost:55000/manager/version/check" -H "Authorization: Bearer $TOKEN"
+````
+
+---
+
+## 2.  Cloud Token Usage
+
+```bash
+TOKEN=$(curl -u <user>:<password> -k -X POST "https://<CloudID>.cloud.wazuh.com/api/wazuh/security/user/authenticate?raw=true")
+curl -k -X <METHOD> "https://<CloudID>.cloud.wazuh.com/api/wazuh/<ENDPOINT>" -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## 3.  Cluster Health & Index Allocation
+
+```bash
+GET _cluster/health
+GET _cluster/allocation/explain?pretty
+GET _cat/shards?h=index,shard,prirep,state,unassigned.reason
+GET _cluster/settings?include_defaults
+PUT /[IDX_NAME]/_settings
+{
+  "number_of_replicas": 0,
+  "index.auto_expand_replicas": false
+}
+```
+
+---
+
+## 4.  Curl Commands (Basic Auth)
+
+```bash
+curl -u admin:<pass> -k -X GET "https://localhost:9200/_cluster/health"
+curl -u admin:<pass> -k -X GET "https://localhost:9200/_cluster/allocation/explain?pretty"
+curl -u admin:<pass> -k -X GET "https://localhost:9200/_cat/shards?h=index,shard,prirep,state,unassigned.reason"
+curl -u admin:<pass> -k -X PUT "https://localhost:9200/[IDX_NAME]/_settings" \
+  -H 'Content-Type: application/json' \
+  -d '{ "index.number_of_replicas": 0, "index.auto_expand_replicas": false }'
+curl -X DELETE "https://localhost:9200/[index-name]" -u admin:<pass> -k
+curl -u admin:<pass> -k -X GET "https://localhost:9200/_cat/nodes?v"
+```
+
+---
+
+## 5.  Curl with Certs
+
+```bash
+curl --cert /etc/wazuh-indexer/certs/admin.pem --key /etc/wazuh-indexer/certs/admin-key.pem -k -X GET "https://localhost:9200/_cluster/health"
+curl --cert /etc/wazuh-indexer/certs/admin.pem --key /etc/wazuh-indexer/certs/admin-key.pem -k -X GET "https://localhost:9200/_cat/shards?h=index,shard,prirep,state,unassigned.reason"
+curl -k --cert /etc/wazuh-indexer/certs/admin.pem --key /etc/wazuh-indexer/certs/admin-key.pem -X PUT "https://localhost:9200/[IDX_NAME]/_settings" \
+  -H 'Content-Type: application/json' \
+  -d '{ "index.number_of_replicas": 0, "index.auto_expand_replicas": false }'
+curl --cert /etc/wazuh-indexer/certs/admin.pem --key /etc/wazuh-indexer/certs/admin-key.pem -k -X GET "https://localhost:9200/_cat/nodes?v"
+```
+
+---
+
+## 6.  Indexer & Dashboard Plugins
+
+```bash
+/usr/share/wazuh-indexer/bin/opensearch-plugin list
+sudo -u wazuh-dashboard /usr/share/wazuh-dashboard/bin/opensearch-dashboards-plugin list
+sudo -u wazuh-dashboard /usr/share/wazuh-dashboard/bin/opensearch-dashboards-plugin remove <PLUGIN_NAME>
+sudo -u wazuh-dashboard /usr/share/wazuh-dashboard/bin/opensearch-dashboards-plugin install <PLUGIN_NAME>
+```
+
+---
+
+## 7.  Reindexing & Field Changes
+
+```bash
+GET _cat/indices/wazuh-alerts-*
+GET _cat/indices/wazuh-*?h=index
+GET /wazuh-alerts-*/_stats/store
+GET /_cat/indices/winlogbeat*?v=true&s=index&format=json
+GET _cat/indices/wazuh-alerts-*?bytes=gb&s=index
+
+```
+```bash
+TOKEN=$(curl -u <user>:<password> -k -X POST "https://<CloudID>.cloud.wazuh.com/api/wazuh/security/user/authenticate?raw=true")
+
+curl -k -X GET "https://<CloudID>.cloud.wazuh.com:9200/_cat/indices/wazuh-alerts-*" -H "Authorization: Bearer $TOKEN"
+
+curl -k -X GET "https://<CloudID>.cloud.wazuh.com:9200/_cat/indices/wazuh-*?h=index" -H "Authorization: Bearer $TOKEN"
+
+curl -k -X GET "https://<CloudID>.cloud.wazuh.com:9200/wazuh-alerts-*/_stats/store" -H "Authorization: Bearer $TOKEN"
+
+curl -k -X GET "https://<CloudID>.cloud.wazuh.com:9200/_cat/indices/wazuh-alerts-*?bytes=gb&s=index" -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## 8.  Templates & Reindexing
+
+```bash
+GET /_template/wazuh?pretty
+GET /wazuh-alerts-4.x-2025.MM.DD/_mapping/field/full_log
+
+POST _reindex
+{
+  "source": { "index": "wazuh-alerts-4.x-2025.MM.DD" },
+  "dest":   { "index": "wazuh-2025.MM.DD-backup" }
+}
+DELETE /wazuh-alerts-4.x-2025.MM.DD
+```
+
+---
+
+## 9.  ISM Index Policies
+
+```bash
+GET _plugins/_ism/explain
+GET _plugins/_ism/policies
+GET _plugins/_ism/policies/30d_policy?pretty=true
+GET _plugins/_ism/explain/wazuh-*
+```
+
+---
+
+## 10.  Journal & Log Checks
+
+```bash
+journalctl -xeu wazuh-dashboard --no-pager | grep -Ei "warn|error"
+journalctl -xeu wazuh-indexer --no-pager | grep -Ei "warn|error"
+cat /var/log/filebeat/filebeat* | grep -i "warn|error"
+cat /var/ossec/logs/ossec.log | grep -i "warn|error"
+```
+
+---
+
+## 11.  Disk & File Checks
+
+```bash
+du -skh /home/ubuntu/* | sort -hr
+du / -h --max-depth=1 2>/dev/null
+```
+
+---
+
+## 12.  Generate Fake Logs
+
+```bash
+for i in {1..8}; do echo '[log_sample]' >> /home/ubuntu/test ; done
+```
+
+---
+
+## 13.  Exclude Wazuh APT Repo
+
+```bash
+sed -i "s/^deb/#deb/" /etc/apt/sources.list.d/wazuh.list
+apt-get update
+```
+
+---
+
+## 14.  SSL Cert Info
+
+```bash
+openssl x509 -in /etc/wazuh-dashboard/certs/dashboard.pem -noout -text
+```
+
+---
+
+## 15.  Port Tests (PowerShell)
+
+```powershell
+(new-object Net.Sockets.TcpClient).Connect("<WAZUH_MANAGER_IP>", 1514)
+(new-object Net.Sockets.TcpClient).Connect("<WAZUH_MANAGER_IP>", 1515)
+(new-object Net.Sockets.TcpClient).Connect("<WAZUH_MANAGER_IP>", 55000)
+(new-object Net.Sockets.TcpClient).Connect("60uucs2tvp15.cloud.wazuh.com", 1514)
+```
+
+---
+
+## 16.  Regex for Private IPs
+
+```regex
+(10\.\d+\.\d+\.\d+)|(172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+)|(192\.168\.\d+\.\d+)
+```
+
+---
+
+## 17.  Update Indexer Credentials
+
+```bash
+echo '<INDEXER_USERNAME>' | /var/ossec/bin/wazuh-keystore -f indexer -k username
+echo '<INDEXER_PASSWORD>' | /var/ossec/bin/wazuh-keystore -f indexer -k password
+
+echo <CUSTOM_USERNAME> | filebeat keystore add username --stdin --force
+echo <CUSTOM_PASSWORD> | filebeat keystore add password --stdin --force
+```
+
+---
+
+## 18.  Upgrade Agents via API
+
+```bash
+PUT /agents/upgrade?agents_list=all&pretty=true
+GET /agents/upgrade_result
+PUT /agents/upgrade?agents_list=all&wait_for_complete=true&pretty=true
+PUT /agents/upgrade?agents_list=005,007&pretty=true
+```
+
+---
+
+## 19.  Processor (Object → Not Object)
+
+```json
+{
+  "rename": {
+    "if": "ctx?.data?.data != null && !(ctx?.data?.data instanceof char)",
+    "field": "data.data",
+    "target_field": "data.data_notObj",
+    "ignore_missing": true,
+    "ignore_failure": true
+  }
+}
+```
+
+## 20.  Regex to match all including spaces and special characters
+
+```regex
+"([^"]+)"
+```
+
+* `"` → matches the opening double quote.
+* `([^"]+)` → **capture group** that grabs one or more characters that are *not* a double quote (`[^"]+`).
+* `"` → matches the closing double quote.
+
+---
+
+## 21. Include/exclude for Wazuh visualization creation
+
+```
+{
+  "include": "ChronosAcc|ADAccounting02|ChronosDFS02|JMWACC|EXCHACC02|ExchAcc01|SQL"
+}
+```
+
+## 22.  Get members of ADA group
+
+```
+Get-ADGroupMember -Identity "Domain Admins" | Select-Object SamAccountName
+Get-ADUser DWM-198$ -Properties MemberOf | Select -ExpandProperty MemberOf
+```
+
+## 23.  Get info from members of ADA
+
+```
+net user [User] /domain
+```
+
+## 24.  Getting audit enabled on Linux
+
+# auditd Setup for Wazuh — Command Execution Logging
+
+> Recommended method for capturing command execution (`execve`) on Linux agents.
+
+---
+
+## Install
+
+```bash
+apt install auditd audispd-plugins   # Debian/Ubuntu
+yum install audit                    # RHEL/CentOS
+```
+
+---
+
+## Add Rules
+
+Edit `/etc/audit/rules.d/audit.rules`:
+
+```bash
+# Log all command executions (execve syscall)
+-a always,exit -F arch=b64 -S execve -k command_execution
+-a always,exit -F arch=b32 -S execve -k command_execution
+
+# Optional: exclude noisy system processes
+-F auid!=4294967295   # exclude unset UIDs (kernel threads)
+```
+
+---
+
+## Apply & Enable
+
+```bash
+augenrules --load
+systemctl enable auditd --now
+```
+
+---
+
+## Verify
+
+```bash
+# Check rules are loaded
+auditctl -l
+
+# Run a test command, then search for it
+cat /etc/hostname
+ausearch -k command_execution | tail -20
+```
+
+---
+
+## 25.  ILM Metrics Policy — Stuck Warm Migration Troubleshooting
+
+> Context: `metrics` ILM policy indices were stuck in `warm` phase indefinitely.
+> Root causes found: (1) single `data_warm` node couldn't hold a replica shard,
+> (2) shard recovery throttling limited concurrent migrations once unblocked.
+
+### Check index count / current state
+
+```
+GET _cat/indices/.ds-metrics-*?v&s=index
+```
+
+### Cluster health & node roles
+
+```
+GET _cluster/health
+GET _cat/nodes?v&h=name,node.role
+GET _cat/nodes?v&h=name,disk.used,disk.avail,disk.total,disk.used_percent&s=disk.used_percent:desc
+GET _cluster/settings?include_defaults=true&filter_path=**.watermark
+```
+
+### Check shard allocation issues
+
+```
+GET _cluster/allocation/explain?pretty
+GET _cat/shards?h=index,shard,prirep,state,unassigned.reason
+```
+
+### Check ILM policy definition
+
+```
+GET /_ilm/policy/metrics
+```
+
+### Check ILM status per index (or all metrics indices)
+
+```
+GET /.ds-metrics-*/_ilm/explain
+
+# Filtered / condensed view (index, phase, action, step only)
+GET /.ds-metrics-*/_ilm/explain?filter_path=indices.*.index,indices.*.phase,indices.*.action,indices.*.step
+
+# Single index
+GET /.ds-metrics-elastic_agent.elastic_agent-default-2026.04.10-000002/_ilm/explain
+```
+
+### Update the metrics ILM policy (hot 1d → warm 3d → cold 5d → delete 6d)
+
+```
+PUT _ilm/policy/metrics
+{
+  "policy": {
+    "phases": {
+      "hot": {
+        "min_age": "0ms",
+        "actions": {
+          "rollover": {
+            "max_age": "1d",
+            "max_primary_shard_size": "50gb"
+          }
+        }
+      },
+      "warm": {
+        "min_age": "3d",
+        "actions": {
+          "allocate": {
+            "number_of_replicas": 0
+          },
+          "forcemerge": {
+            "max_num_segments": 1
+          },
+          "migrate": {
+            "enabled": true
+          }
+        }
+      },
+      "cold": {
+        "min_age": "5d",
+        "actions": {
+          "allocate": {
+            "number_of_replicas": 1
+          },
+          "migrate": {
+            "enabled": true
+          }
+        }
+      },
+      "delete": {
+        "min_age": "6d",
+        "actions": {
+          "delete": {
+            "delete_searchable_snapshot": true
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### Retry a stuck index (only works if index is in an ERROR state)
+
+```
+POST /.ds-metrics-*/_ilm/retry
+```
+
+### Force an index to re-evaluate against the current policy (use when stuck, not erroring)
+
+```
+PUT /.ds-metrics-elastic_agent.elastic_agent-default-2026.04.10-000002/_ilm/move
+{
+  "current_step": {
+    "phase": "warm",
+    "action": "migrate",
+    "name": "check-migration"
+  },
+  "next_step": {
+    "phase": "warm",
+    "action": "allocate",
+    "name": "allocate"
+  }
+}
+```
+
+### Confirm why a specific shard can't allocate
+
+```
+GET _cluster/allocation/explain
+{
+  "index": ".ds-metrics-elastic_agent.elastic_agent-default-2026.04.10-000002",
+  "shard": 0,
+  "primary": true
+}
+```
+
+### Watch active shard recoveries (migration progress)
+
+```
+GET _cat/recovery?v&active_only=true
+```
+
+### Temporarily raise concurrent shard recovery limit (speed up migration wave)
+
+```
+PUT _cluster/settings
+{
+  "transient": {
+    "cluster.routing.allocation.node_concurrent_recoveries": 4
+  }
+}
+```
+
+### Manually drop replicas on an index/pattern (quick fix, not policy-based)
+
+```
+PUT /.ds-metrics-*/_settings
+{
+  "number_of_replicas": 0,
+  "index.auto_expand_replicas": false
+}
+```
+
+### Storage / index size checks
+
+```
+GET _cat/indices?v&h=index,status,health,store.size&s=store.size:desc
+GET _cat/indices?v&h=index,store.size,pri.store.size,docs.count&s=store.size:desc&pretty
+```
+
+---
