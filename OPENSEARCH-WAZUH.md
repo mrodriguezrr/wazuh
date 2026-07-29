@@ -363,6 +363,7 @@ GET _cat/indices/.ds-metrics-*?v&s=index
 GET _cluster/health
 GET _cat/nodes?v&h=name,node.role
 GET _cat/nodes?v&h=name,disk.used,disk.avail,disk.total,disk.used_percent&s=disk.used_percent:desc
+GET _cat/nodes?v&h=name,node.role,disk.used,disk.avail,disk.total,disk.used_percent&s=disk.used_percent:desc
 GET _cluster/settings?include_defaults=true&filter_path=**.watermark
 ```
 
