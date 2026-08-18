@@ -54,6 +54,7 @@ curl -k -X <METHOD> "https://<CloudID>.cloud.wazuh.com/api/wazuh/<ENDPOINT>" -H 
 
 ```bash
 GET _cluster/health
+GET _cat/indices?v&s=index
 GET _cluster/allocation/explain?pretty
 GET _cat/shards?h=index,shard,prirep,state,unassigned.reason
 GET _cluster/settings?include_defaults
@@ -105,7 +106,7 @@ sudo -u wazuh-dashboard /usr/share/wazuh-dashboard/bin/opensearch-dashboards-plu
 
 ---
 
-## 7.  Reindexing & Field Changes
+## 7.   Reindexing & Field Changes
 
 ```bash
 GET _cat/indices/wazuh-alerts-*
