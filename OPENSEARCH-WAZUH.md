@@ -516,8 +516,7 @@ GET _cat/indices?v&h=index,status,health,store.size&s=store.size:desc
 GET _cat/indices?v&h=index,store.size,pri.store.size,docs.count&s=store.size:desc&pretty
 ```
 
-
-### Delete index content 
+## 26. Delete index content 
 ```
 POST [index_name]/_delete_by_query
 {
