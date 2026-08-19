@@ -26,6 +26,7 @@
 23. [Get info from members of ADA](#23--Get-info-from-members-of-ADA).
 24. [Getting audit enabled on Linux](#24--Getting-audit-enabled-on-Linux).
 25. [ILM Metrics Policy — Stuck Warm Migration Troubleshooting](#25--ilm-metrics-policy--stuck-warm-migration-troubleshooting).
+26. [Delete index content](#26--Delete-index-content).  
 
 Get info from members of ADA
 
@@ -515,4 +516,12 @@ GET _cat/indices?v&h=index,status,health,store.size&s=store.size:desc
 GET _cat/indices?v&h=index,store.size,pri.store.size,docs.count&s=store.size:desc&pretty
 ```
 
+
+### Delete index content 
+```
+POST [index_name]/_delete_by_query
+{
+  "query": { "match_all": {} }
+}
+```
 ---
