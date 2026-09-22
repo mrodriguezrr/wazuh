@@ -36,6 +36,7 @@ Circuit breaker status per node — this caught real memory pressure earlier in 
 
 ```json
 GET _cat/allocation?v&s=disk.percent:desc
+GET _cat/nodes?v&h=name,disk.used_percent,disk.avail
 ```
 Per-node disk usage as Elasticsearch sees it.
 
