@@ -83,3 +83,64 @@ DELETE <INDEX>
 - `remove_backing_index` only detaches/un-hides — it does **not** delete. Step 5 is required to free space.
 - A write index can never be removed via `remove_backing_index` — always check step 1 first.
 - `version_conflict_engine_exception` on reindex usually means a prior attempt already partially/fully populated `-fixed`. Check the count (step 3) before re-running — if it already matches the source, skip straight to step 4.
+
+## Example:
+```
+PUT .ds-logs-medianova.traffic-default-2026.09.21-000211-fixed
+{
+  "settings": {
+    "index": {
+      "lifecycle": { "name": "medianova-traffic-policy" },
+      "mode": "logsdb",
+      "refresh_interval": "30s",
+      "number_of_shards": "1",
+      "number_of_replicas": "1"
+    }
+  },
+  "mappings": {
+    "properties": {
+      "@timestamp": { "type": "date" },
+      "data_stream": {
+        "properties": {
+          "namespace": { "type": "constant_keyword" },
+          "type": { "type": "constant_keyword", "value": "logs" },
+          "dataset": { "type": "constant_keyword", "value": "medianova.traffic" }
+        }
+      },
+      "http": {
+        "properties": {
+          "request": { "properties": { "referrer": { "type": "keyword" }, "method": { "type": "keyword" }, "bytes": { "type": "integer" } } },
+          "response": { "properties": { "status_code": { "type": "integer" }, "bytes": { "type": "integer" } } },
+          "version": { "type": "keyword" }
+        }
+      },
+      "tls": { "properties": { "version": { "type": "keyword" } } },
+      "source": {
+        "properties": {
+          "geo": { "properties": { "country_iso_code": { "type": "keyword" } } },
+          "as": { "properties": { "number": { "type": "integer" }, "organization": { "properties": { "name": { "type": "keyword" } } } } },
+          "ip": { "type": "ip" }
+        }
+      },
+      "event": {
+        "properties": {
+          "duration": { "type": "float" }, "kind": { "type": "keyword" }, "category": { "type": "keyword" },
+          "type": { "type": "keyword" }, "dataset": { "type": "keyword" }, "outcome": { "type": "keyword" }
+        }
+      },
+      "url": { "properties": { "path": { "type": "wildcard" }, "domain": { "type": "keyword" }, "query": { "type": "wildcard" } } },
+      "user_agent": {
+        "properties": {
+          "original": { "type": "keyword", "ignore_above": 1024 }
+        }
+      },
+      "labels": {
+        "properties": {
+          "server_name": { "type": "keyword" }, "cdn_node": { "type": "keyword" }, "origin_host": { "type": "keyword" },
+          "resource_uuid": { "type": "keyword" }, "upstream_response_time": { "type": "float" }, "cache_status": { "type": "keyword" }
+        }
+      }
+    }
+  }
+}
+```
