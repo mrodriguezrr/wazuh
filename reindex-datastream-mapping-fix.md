@@ -86,6 +86,9 @@ DELETE <INDEX>
 
 ## Example:
 ```
+GET .ds-logs-medianova.traffic-default-2026.09.23-000215-fixed/_count
+
+
 PUT .ds-logs-medianova.traffic-default-2026.09.21-000211-fixed
 {
   "settings": {
@@ -143,4 +146,17 @@ PUT .ds-logs-medianova.traffic-default-2026.09.21-000211-fixed
     }
   }
 }
+
+POST _reindex?wait_for_completion=false&slices=auto
+{
+  "conflicts": "proceed",
+  "source": { "index": ".ds-logs-medianova.traffic-default-2026.09.21-000211" },
+  "dest": { "index": ".ds-logs-medianova.traffic-default-2026.09.21-000211-fixed", "op_type": "create" }
+}
+
+GET _tasks/8JvF0gGVSmezJt-4vYFKpQ:2686319749
+GET _tasks?actions=*reindex&detailed=true
+GET .ds-logs-medianova.traffic-default-2026.09.21-000211-fixed/_count
+
+DELETE .ds-logs-medianova.traffic-default-2026.09.21-000211
 ```
